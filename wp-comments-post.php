@@ -68,7 +68,7 @@ if ( ! $cookies_consent && 'unapproved' === wp_get_comment_status( $comment ) &&
 }
 
 /**
- * Filters the location URI to send the commenter after posting.
+ * Filters the location URI to send the commenter after posting .
  *
  * @since 2.0.5
  *
