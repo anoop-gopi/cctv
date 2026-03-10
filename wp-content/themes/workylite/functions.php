@@ -434,3 +434,132 @@ function worky_theme() {
 }
 
 worky_theme();
+
+function worky_contact_us_section_shortcode() {
+
+	if ( ! is_page() ) {
+		return '';
+	}
+
+	$success_message = '';
+	$error_message   = '';
+
+	if (
+		'POST' === $_SERVER['REQUEST_METHOD']
+		&& isset( $_POST['worky_contact_nonce'] )
+		&& wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['worky_contact_nonce'] ) ), 'worky_contact_submit' )
+	) {
+		$name    = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+		$phone   = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
+		$service = isset( $_POST['service'] ) ? sanitize_text_field( wp_unslash( $_POST['service'] ) ) : '';
+		$message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+
+		$services = array(
+			'LAN Networking',
+			'Automatic Gates',
+			'Fire Alarms',
+			'CCTV Installation',
+			'Access Control',
+			'Video Door Phone',
+		);
+
+		if ( empty( $name ) || empty( $phone ) || empty( $service ) || empty( $message ) ) {
+			$error_message = 'Please fill all fields.';
+		} elseif ( ! in_array( $service, $services, true ) ) {
+			$error_message = 'Please select a valid service.';
+		} else {
+			$to      = 'anoop09smart@gmail.com';
+			$subject = 'New Contact Request - ' . get_bloginfo( 'name' );
+			$body    = "Name: {$name}\n";
+			$body   .= "Phone: {$phone}\n";
+			$body   .= "Service: {$service}\n\n";
+			$body   .= "Message:\n{$message}\n";
+
+			$sent = wp_mail( $to, $subject, $body );
+
+			if ( $sent ) {
+				$success_message = 'Thanks! Your message has been sent.';
+			} else {
+				$error_message = 'Unable to send email right now. Please try again.';
+			}
+		}
+	}
+
+	$selected_service = isset( $_POST['service'] ) ? sanitize_text_field( wp_unslash( $_POST['service'] ) ) : '';
+
+	ob_start();
+	?>
+	<div class="worky-contact-page">
+		<div class="worky-contact-info row">
+			<div class="col-md-4 col-xs-12 worky-contact-card">
+				<h4>Mobile</h4>
+				<p><a href="tel:+919876543210">+91 98765 43210</a></p>
+			</div>
+			<div class="col-md-4 col-xs-12 worky-contact-card">
+				<h4>Email</h4>
+				<p><a href="mailto:anoop09smart@gmail.com">anoop09smart@gmail.com</a></p>
+			</div>
+			<div class="col-md-4 col-xs-12 worky-contact-card">
+				<h4>Address</h4>
+				<p>Hyderabad, Telangana, India</p>
+			</div>
+		</div>
+
+		<?php if ( ! empty( $success_message ) ) : ?>
+			<div class="worky-contact-notice success"><?php echo esc_html( $success_message ); ?></div>
+		<?php endif; ?>
+
+		<?php if ( ! empty( $error_message ) ) : ?>
+			<div class="worky-contact-notice error"><?php echo esc_html( $error_message ); ?></div>
+		<?php endif; ?>
+
+		<div class="worky-contact-separator"></div>
+		<h3 class="worky-contact-subheading">Request a Quote</h3>
+
+		<form method="post" class="worky-contact-form">
+			<?php wp_nonce_field( 'worky_contact_submit', 'worky_contact_nonce' ); ?>
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<label for="worky_name">Name</label>
+					<input id="worky_name" type="text" name="name" required value="<?php echo isset( $_POST['name'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_POST['name'] ) ) ) : ''; ?>">
+				</div>
+				<div class="col-md-6 col-xs-12">
+					<label for="worky_phone">Phone</label>
+					<input id="worky_phone" type="text" name="phone" required value="<?php echo isset( $_POST['phone'] ) ? esc_attr( sanitize_text_field( wp_unslash( $_POST['phone'] ) ) ) : ''; ?>">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12">
+					<label for="worky_service">Service</label>
+					<select id="worky_service" name="service" required>
+						<option value="">Select a service</option>
+						<?php
+						$services = array(
+							'LAN Networking',
+							'Automatic Gates',
+							'Fire Alarms',
+							'CCTV Installation',
+							'Access Control',
+							'Video Door Phone',
+						);
+						foreach ( $services as $service ) :
+						?>
+							<option value="<?php echo esc_attr( $service ); ?>" <?php selected( $selected_service, $service ); ?>><?php echo esc_html( $service ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12">
+					<label for="worky_message">Message</label>
+					<textarea id="worky_message" name="message" required><?php echo isset( $_POST['message'] ) ? esc_textarea( sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) ) : ''; ?></textarea>
+				</div>
+			</div>
+			<button type="submit">Send</button>
+		</form>
+	</div>
+	<?php
+
+	return ob_get_clean();
+}
+add_shortcode( 'worky_contact_us', 'worky_contact_us_section_shortcode' );
