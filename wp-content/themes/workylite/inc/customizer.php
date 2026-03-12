@@ -1850,7 +1850,7 @@ function worky_get_dynamic_css_options() {
  * @return string
  */
 function worky_get_default_footer_copyright() {
-	return esc_html__( '&copy; %%year%% Worky | Multipurpose WP Theme with Elementor Page Builder', 'worky' );
+	return esc_html__( '&copy; %%year%% RapidWebVentures | Multipurpose Theme by RapidWebVentures', 'worky' );
 }
 
 /**
