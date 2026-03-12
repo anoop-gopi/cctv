@@ -603,21 +603,7 @@ if ( ! function_exists( 'worky_site_description' ) ) :
  * @return void
  */
 function worky_site_description() {
-	$show_desc = worky_theme()->customizer->get_value( 'show_tagline' );
-
-	if ( ! $show_desc ) {
-		return;
-	}
-
-	$description = get_bloginfo( 'description', 'display' );
-
-	if ( ! ( $description || is_customize_preview() ) ) {
-		return;
-	}
-
-	$format = apply_filters( 'worky-theme/header/description-format', '<div class="site-description">%s</div>' );
-
-	printf( $format, $description );
+	return;
 }
 endif;
 

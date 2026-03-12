@@ -106,7 +106,19 @@ function worky_get_social_list( $context, $type = 'icon' ) {
 function worky_set_nav_menu( $args ) {
 
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
-		return null;
+		$theme_location = isset( $args['theme_location'] ) ? $args['theme_location'] : '';
+
+		if ( 'main' !== $theme_location ) {
+			return null;
+		}
+
+		wp_page_menu( array(
+			'menu_class' => 'menu',
+			'show_home'  => true,
+			'echo'       => true,
+		) );
+
+		return;
 	}
 
 	$format = '<div class="set-menu %3$s"><a href="%2$s" target="_blank" class="set-menu_link">%1$s</a></div>';
